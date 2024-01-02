@@ -1,0 +1,5 @@
+@font-face {
+  font-family: "JUST";
+  src: local("JUST"), url("../fonts/JUSTSansExBold.otf") format("otf"),
+    url("../fonts/JUSTSansRegular.otf") format("otf");
+}
