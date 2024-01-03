@@ -4,9 +4,15 @@ import * as Icons from "../../Svg/Icons";
 import { GoChevronLeft } from "react-icons/go";
 import WhatsAppPopup from "./WhatsAppPopup";
 
-const Stats = ({ setState }) => {
+const Stats = ({ setState, calculatedSalaryRange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
+
+  const lower = calculatedSalaryRange?.lower;
+  const upper = calculatedSalaryRange?.upper;
+
+  console.log("calculatedSalaryRange in Stats:", calculatedSalaryRange);
+
   return (
     <>
       <div className="w-full h-full flex flex-col items-start justify-start lg:justify-between gap-4">
@@ -26,9 +32,17 @@ const Stats = ({ setState }) => {
             Germany, factoring in your family status and job seniority, ranges
             from
           </p>
-          <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-3xl text-xl text-white-main font-bold">
+
+          {calculatedSalaryRange ? (
+            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-3xl text-xl text-white-main font-bold">
+              {lower?.toFixed(2) || "N/A"} to {upper?.toFixed(2) || "N/A"} euros
+            </span>
+          ) : (
+            <span>Salary range not available</span>
+          )}
+          {/* <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-3xl text-xl text-white-main font-bold">
             72,000 to 84,000 euros
-          </span>
+          </span> */}
           <p className="text-lg sm:text-[22px] sm:leading-[28px] text-white-main font-medium">
             💵 Destination country{" "}
             <span className="text-[#FBD96A] font-bold">tax rates</span> are
