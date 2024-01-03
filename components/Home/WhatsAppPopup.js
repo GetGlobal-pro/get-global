@@ -1,18 +1,162 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaCircleCheck } from "react-icons/fa6";
 import DialogueWrapper from "../Shared/DialogeWrapper";
 import * as Icons from "../../Svg/Icons";
+import { supabase } from "../Shared/client.js";
+import toast, { Toaster } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
+
 
 const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   const [email, setEmail] = useState("");
+  const [refSource, setRefSource] = useState("Direct"); //to track user source
   const [thankYou, setThankYou] = useState(false);
   const toggleThankYou = () => setThankYou(!thankYou);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      setRefSource(searchParams.get("ref") || "Direct");
+    }
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     toggleThankYou();
   };
+
+  const handleEmailSubmit = async () => {
+    if (await isEmailDisposable(email)) {
+      toast.error("Please enter a permanent email address.", {
+        icon: "❌",
+        style: {
+          background: "#FFFFFF",
+          color: "black",
+          border: "2px solid #d32f2f",
+          fontSize: "14px",
+        },
+        duration: 4000,
+      });
+      return;
+    }
+
+    if (isEmailValid(email)) {
+      try {
+        const token = await saveEmailToSupabase(email, refSource);
+        toast.success("Email saved successfully", {
+          icon: "🚀",
+          style: {
+            background: "#FFFFFF",
+            color: "black",
+            border: "2px solid #45a049",
+            fontSize: "14px",
+          },
+          duration: 4000,
+        });
+        await sendEmail(email, token);
+        setFormSubmitted(true);
+      } catch (error) {
+        if (error.message.includes("unique constraint")) {
+          toast.error("You are already registered with GetGlobal.", {
+            icon: "✅",
+            style: {
+              background: "#FFFFFF",
+              color: "black",
+              border: "2px solid #45a049",
+              fontSize: "14px",
+            },
+            duration: 4000,
+          });
+        } else {
+          toast.error("An error occurred while processing your request.", {
+            icon: "❌",
+            style: {
+              background: "#FFFFFF",
+              color: "black",
+              border: "2px solid #d32f2f",
+              fontSize: "14px",
+            },
+            duration: 4000,
+          });
+        }
+      }
+    } else {
+      toast.error("Invalid email address.", {
+        icon: "❌",
+        style: {
+          background: "#FFFFFF",
+          color: "black",
+          border: "2px solid #d32f2f",
+          fontSize: "14px",
+        },
+        duration: 4000,
+      });
+    }
+  };
+
+  const saveEmailToSupabase = async (email, source) => {
+    const token = uuidv4();
+    console.log(token);
+    const { data, error } = await supabase.from("job_seeker").insert([
+      {
+        js_email: email,
+        email_status: "subscribed",
+        Source: source,
+        verification_token: token,
+      },
+    ]);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return token;
+  };
+
+  const sendEmail = async (email, token) => {
+    const verificationUrl = `https://get-global-beta.vercel.app/api/verify?token=${token}`;
+    try {
+      const response = await fetch("/api/send/route", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, verificationToken: token }),
+      });
+
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(errorResult.error);
+      }
+    } catch (error) {
+      throw new Error(error.message || "Error sending email.");
+    }
+  };
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isEmailDisposable = async (email) => {
+    const domain = email.split('@')[1];
+
+    const { data, error } = await supabase
+      .from('disposable_emails')
+      .select('domains')
+      .eq('domains', domain);
+
+    if (error) {
+      console.error('Error checking disposable email:', error);
+      return false;
+    }
+
+    return data.length > 0;
+  };
+
+
   return (
     <DialogueWrapper Open={isOpen} CloseEvent={toggleIsOpen}>
       {!thankYou && (
@@ -80,6 +224,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
             <button
               type="submit"
               className="h-[60px] w-full flex items-center justify-center gap-2 bg-green rounded-[30px] text-white-main text-lg sm:text-xl font-bold"
+              onClick={handleEmailSubmit}
             >
               <Icons.Whatsapp /> Get your Whatsapp Invite
             </button>
