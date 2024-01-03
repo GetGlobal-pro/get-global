@@ -1,12 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCircle } from "react-icons/fa";
 import { ImManWoman } from "react-icons/im";
 import { MdOutlineMan, MdFamilyRestroom } from "react-icons/md";
 import CheckBox from "../Shared/CheckBox";
-import Input from "../Shared/Input";
+import Select from "../Shared/Input";
 import Stats from "./Stats";
+import { supabase } from "../Shared/Client";
+
 const SalaryCalculator = () => {
+  const [countryData, setCountryData] = useState({ home: {}, destination: {} });
+  const [salaryData, setSalaryData] = useState({});
+  const [pppData, setPppData] = useState({});
+  const [homeCountries, setHomeCountries] = useState([]);
+  const [destinationCountries, setDestinationCountries] = useState([]);
+  const [currency, setCurrency] = useState("");
+  const [calculatedSalaryRange, setCalculatedSalaryRange] = useState(null);
+
   const [isStats, setIsStats] = useState(false);
   const [inputs, setInputs] = useState({
     currentAddress: "",
@@ -16,8 +26,13 @@ const SalaryCalculator = () => {
     seniority: "mid",
   });
   const toggleStats = () => setIsStats(!isStats);
-  const handleInputs = (e) =>
-    setInputs({ ...inputs, [e.target.name]: e.target.value });
+  const handleInputs = (e) => {
+    console.log(e); // Log the entire event object
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleStatusChange = (status) => setInputs({ ...inputs, status });
 
@@ -25,8 +40,240 @@ const SalaryCalculator = () => {
     setInputs({ ...inputs, seniority });
   const handleSubmit = (e) => {
     e.preventDefault();
+    calculateSalary(); // This will update the calculatedSalaryRange state
+
     toggleStats();
   };
+
+  const fetchHomeCountries = async () => {
+    try {
+      const { data: countries, error } = await supabase
+        .from("country_ppp")
+        .select("country_name, country_code");
+      if (error) throw error;
+      const formattedCountries = countries.map((country) => ({
+        value: country.country_code,
+        label: country.country_name,
+      }));
+      console.log("Home Countries:", formattedCountries);
+
+      setHomeCountries(formattedCountries);
+    } catch (error) {
+      console.error("Error fetching home countries:", error);
+    }
+  };
+
+  const fetchDestinationCountries = async () => {
+    try {
+      const { data: countries, error } = await supabase
+        .from("country_stats")
+        .select("Country_name, country_code");
+      if (error) throw error;
+      const formattedCountries = countries.map((country) => ({
+        value: country.country_code,
+        label: country.Country_name, // Adjust the field name as per your table structure
+      }));
+      console.log("Destination Countries:", formattedCountries);
+
+      setDestinationCountries(formattedCountries);
+    } catch (error) {
+      console.error("Error fetching destination countries:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHomeCountries();
+    fetchDestinationCountries();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (!inputs.countryFrom || !inputs.countryTo) {
+        // If either country is not selected, skip fetching data
+        return;
+      }
+
+      try {
+        // Fetch PPP data for the home country
+        const { data: homePppData, error: homePppError } = await supabase
+          .from("country_ppp")
+          .select("conversion_value_usd")
+          .eq("country_code", inputs.countryFrom)
+          .single();
+
+        // Fetch PPP data for the destination country
+        const { data: destPppData, error: destPppError } = await supabase
+          .from("country_ppp")
+          .select("conversion_value_usd")
+          .eq("country_code", inputs.countryTo)
+          .single();
+
+        // Fetch Cost of Living and Rent Index data
+        const { data: statsData, error: statsError } = await supabase
+          .from("country_stats")
+          .select("groceries_index, col_rent_index")
+          .eq("country_code", inputs.countryTo)
+          .single();
+
+        // Fetch salary reference data based on seniority
+        const { data: salaryData, error: salaryError } = await supabase
+          .from("country_salary_tax")
+          .select("25th_salary, median_salary, 75th_salary, 90th_salary")
+          .eq("Country_code", inputs.countryTo)
+          .single();
+
+        if (homePppError || destPppError || statsError || salaryError) {
+          // Handle errors (you can also set error states here to show error messages in the UI)
+          console.error(
+            homePppError || destPppError || statsError || salaryError
+          );
+          return;
+        }
+
+        // Update state with fetched data
+        setPppData({ home: homePppData, destination: destPppData });
+        setCountryData({ ...countryData, destination: statsData });
+        setSalaryData(salaryData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    if (inputs.countryFrom) {
+      fetchData();
+    }
+
+    console.log("Country from input:", inputs.countryFrom);
+  }, [inputs.countryFrom, inputs.countryTo]);
+
+  // Dedicated useEffect for fetching currency based on inputs.countryFrom
+  useEffect(() => {
+    async function fetchCurrency() {
+      if (inputs.countryFrom) {
+        try {
+          const { data: currencyData, error: currencyError } = await supabase
+            .from("country_ppp")
+            .select("currency")
+            .eq("country_code", inputs.countryFrom)
+            .single();
+
+          if (currencyError) {
+            console.error("Error fetching currency:", currencyError);
+            return;
+          }
+
+          if (currencyData && currencyData.currency) {
+            setCurrency(currencyData.currency);
+          } else {
+            console.log("Currency data is null or undefined");
+          }
+        } catch (error) {
+          console.error("Error fetching currency:", error);
+        }
+      }
+    }
+
+    fetchCurrency();
+  }, [inputs.countryFrom]); // Only re-run the effect if inputs.countryFrom changes
+
+  // ... existing useEffect for other data fetching that depends on both countryFrom and countryTo
+
+  // This useEffect will log the currency state after it's updated
+  useEffect(() => {
+    console.log("Currency state updated to:", currency);
+  }, [currency]);
+
+  const calculateSalary = () => {
+    // Check if all required data is available
+    if (
+      !pppData.home ||
+      !pppData.destination ||
+      !salaryData ||
+      !countryData.destination
+    ) {
+      // Data not fully loaded or missing
+      console.error("Required data is not available for salary calculation.");
+      return;
+    }
+
+    console.log("Home PPP :", pppData.home.conversion_value_usd);
+    console.log("Dest PPP :", pppData.destination.conversion_value_usd);
+    // Convert Salary Using PPP
+    const convertedSalary =
+      inputs.income *
+      (pppData.destination.conversion_value_usd /
+        pppData.home.conversion_value_usd);
+
+    console.log("converted salary:", convertedSalary);
+
+    // Adjust for Cost of Living and Rent
+    const colRentIndex = countryData.destination.col_rent_index;
+    console.log("Col & rent index:", colRentIndex);
+    const adjustedSalary = convertedSalary * (colRentIndex / 100);
+    console.log("Adjusted salary:", adjustedSalary);
+
+    // Select Salary Reference Based on Job Seniority
+    let referenceSalary;
+    switch (inputs.seniority) {
+      case "mid":
+        referenceSalary = salaryData["25th_salary"];
+        break;
+      case "senior":
+        referenceSalary = salaryData.median_salary;
+        break;
+      case "manager":
+        referenceSalary =
+          (salaryData.median_salary + salaryData["75th_salary"]) / 2;
+        break;
+      case "leader":
+        referenceSalary =
+          (salaryData["75th_salary"] + salaryData["90th_salary"]) / 2;
+        break;
+      default:
+        console.error("Invalid seniority level");
+        return;
+    }
+
+    console.log("Reference salary:", referenceSalary);
+
+    // Include Grocery Expenses
+    const groceryExpenses =
+      referenceSalary * (countryData.destination.groceries_index / 100);
+    console.log("Grocery Exp:", groceryExpenses);
+
+    // Total Required Salary (Pre-tax)
+    let totalRequiredSalary = adjustedSalary + groceryExpenses;
+    console.log("total req salary:", totalRequiredSalary);
+
+    // Apply Family Status Markup
+    if (inputs.status === "family&kids") {
+      totalRequiredSalary *= 1.1; // 10% markup for family with kids
+    } else if (inputs.status === "family") {
+      totalRequiredSalary *= 1.05; // 5% markup for family
+    }
+
+    // Adjust for Salary Cap (if needed)
+
+    // Determine Salary Range
+    const salaryRangeLowerBound = totalRequiredSalary * 0.9;
+    const salaryRangeUpperBound = totalRequiredSalary * 1.1;
+
+    console.log("Calculated salary range:", {
+      lower: salaryRangeLowerBound,
+      upper: salaryRangeUpperBound,
+    });
+
+    // Update state with the calculated salary range
+    setCalculatedSalaryRange({
+      lower: salaryRangeLowerBound,
+      upper: salaryRangeUpperBound,
+    });
+  };
+
+  useEffect(() => {
+    console.log("Updated calculatedSalaryRange:", calculatedSalaryRange);
+  }, [calculatedSalaryRange]);
+
   return (
     <aside className="w-full h-full lg:row-span-2 bg-black-main rounded-[30px]">
       {!isStats && (
@@ -37,12 +284,15 @@ const SalaryCalculator = () => {
           <h2 className="text-2xl sm:tex-3xl text-white-main font-normal font-Just">
             Salary Insights
           </h2>
-          <Input
-            name="currentAddress"
-            value={inputs.currentAddress}
-            setState={handleInputs}
+          <Select
+            name="countryFrom"
+            value={inputs.countryFrom}
+            setState={(e) => handleInputs(e)}
+            // setState={handleInputs}
+            options={homeCountries} // Ensure options is always an array
             label="Where do you live?"
           />
+
           <div className="w-full flex flex-col items-start justify-start gap-4">
             <p className="text-white-main text-base sm:text-lg font-semibold">
               Your annual income?
@@ -58,14 +308,15 @@ const SalaryCalculator = () => {
                 className="w-full h-full border-none focus:outline-none bg-transparent px-4 text-white-main text-base sm:text-lg font-medium"
               />
               <span className="h-full flex items-center justify-center rounded-r-[30px] bg-black-main/20 px-6 text-white-main text-base sm:text-lg font-medium">
-                INR
+                {currency}
               </span>
             </div>
           </div>
-          <Input
-            name="planAddress"
-            value={inputs.planAddress}
+          <Select
+            name="countryTo"
+            value={inputs.countryTo}
             setState={handleInputs}
+            options={destinationCountries}
             label="Where do you plan to move or considering moving to?"
           />
 
@@ -197,7 +448,12 @@ const SalaryCalculator = () => {
           </button>
         </form>
       )}
-      {isStats && <Stats setState={toggleStats} />}
+      {isStats && (
+        <Stats
+          setState={toggleStats}
+          calculatedSalaryRange={calculatedSalaryRange}
+        />
+      )}
     </aside>
   );
 };
