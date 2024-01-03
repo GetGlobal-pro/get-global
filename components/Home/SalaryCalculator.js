@@ -6,7 +6,7 @@ import { MdOutlineMan, MdFamilyRestroom } from "react-icons/md";
 import CheckBox from "../Shared/CheckBox";
 import Select from "../Shared/Input";
 import Stats from "./Stats";
-import { supabase } from "../Shared/Client";
+import { supabase } from "../Shared/client";
 
 const SalaryCalculator = () => {
   const [countryData, setCountryData] = useState({ home: {}, destination: {} });

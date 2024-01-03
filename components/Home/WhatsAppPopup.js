@@ -257,6 +257,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
             onClick={() => {
               toggleIsOpen();
               setTimeout(() => toggleThankYou(), 500);
+              window.location.href = "https://ggbl.pro/wa";
             }}
             className="h-[60px] w-full flex flex-shrink-0 items-center justify-center gap-2 bg-green rounded-[30px] text-white-main text-lg sm:text-xl font-bold"
           >
