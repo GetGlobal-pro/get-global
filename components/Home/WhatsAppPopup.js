@@ -5,10 +5,10 @@ import { FaCircleCheck } from "react-icons/fa6";
 import DialogueWrapper from "../Shared/DialogeWrapper";
 import * as Icons from "../../Svg/Icons";
 import { supabase } from "../Shared/client.js";
-import toast, { Toaster } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import cookie from 'js-cookie';
 import { usePlausible } from 'next-plausible'
+import toast, { Toaster } from "react-hot-toast";
 
 
 const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
@@ -40,6 +40,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
 
   const handleEmailSubmit = async () => {
     if (await isEmailDisposable(email)) {
+      //console.log("toast")
       toast.error("Please enter a permanent email address.", {
         icon: "❌",
         style: {
@@ -54,9 +55,12 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
     }
 
     if (isEmailValid(email)) {
+      //console.log(" validation toast")
       try {
         const token = await saveEmailToSupabase(email, refSource);
+        
         toast.success("Email saved successfully", {
+          
           icon: "🚀",
           style: {
             background: "#FFFFFF",
