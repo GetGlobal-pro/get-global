@@ -15,8 +15,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <PlausibleProvider domain="get-global-beta.vercel.app"
-          trackLocalhost={true}
-          enabled={true}
+          // trackLocalhost={true}
+          // enabled={true}
           taggedEvents={true}
         />
       </head>
