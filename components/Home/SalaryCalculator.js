@@ -7,8 +7,11 @@ import CheckBox from "../Shared/CheckBox";
 import Select from "../Shared/Input";
 import Stats from "./Stats";
 import { supabase } from "../Shared/client";
+import { usePlausible } from 'next-plausible'
+
 
 const SalaryCalculator = () => {
+  const plausible=usePlausible();
   const [countryData, setCountryData] = useState({ home: {}, destination: {} });
   const [salaryData, setSalaryData] = useState({});
   const [pppData, setPppData] = useState({});
@@ -441,6 +444,7 @@ const SalaryCalculator = () => {
             </div>
           </div>
           <button
+            onClick={ ()=> plausible('Salary-calc')}
             type="submit"
             className="h-[60px] w-[280px] flex items-center justify-center bg-white-main text-black-main text-lg sm:text-xl font-bold rounded-[50px]"
           >
