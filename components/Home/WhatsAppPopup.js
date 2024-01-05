@@ -8,9 +8,11 @@ import { supabase } from "../Shared/client.js";
 import toast, { Toaster } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import cookie from 'js-cookie';
+import { usePlausible } from 'next-plausible'
 
 
 const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
+  const plausible = usePlausible()
   const [email, setEmail] = useState("");
   const [refSource, setRefSource] = useState("Direct"); //to track user source
   const [thankYou, setThankYou] = useState(false);
@@ -196,6 +198,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
               toggleIsOpen();
               setTimeout(() => toggleThankYou(), 500);
               window.location.href = "https://ggbl.pro/lp";
+              plausible('Whatsapp-link')
             }}
             className="h-[60px] w-full flex flex-shrink-0 items-center justify-center gap-2 bg-green rounded-[30px] text-white-main text-lg sm:text-xl font-bold"
           >
@@ -248,6 +251,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
                 handleEmailSubmit();
                 cookie.set('email', email);
                 toggleThankYou();
+                plausible('Email-btn');
               }}
             >
               <Icons.Whatsapp /> Get your Whatsapp Invite

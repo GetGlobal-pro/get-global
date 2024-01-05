@@ -1,5 +1,7 @@
 import { Nunito } from "next/font/google";
 import "./globals.css";
+import PlausibleProvider from 'next-plausible'
+
 
 const nunito = Nunito({ subsets: ["latin"] });
 
@@ -11,6 +13,13 @@ export const metadataF = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <PlausibleProvider domain="get-global-beta.vercel.app"
+          trackLocalhost={true}
+          enabled={true}
+          taggedEvents={true}
+        />
+      </head>
       <body className={nunito.className}>{children}</body>
     </html>
   );
