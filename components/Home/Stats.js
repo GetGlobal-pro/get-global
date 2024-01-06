@@ -27,14 +27,14 @@ const Stats = ({ setState, calculatedSalaryRange }) => {
           <h2 className="text-white-main sm:text-3xl text-2xl font-extrabold font-Just">
             Your Salary Insights
           </h2>
-          <p className="text-lg sm:text-[22px] sm:leading-8 font-medium text-white-main">
+          <p className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
             Based on your living standards in India, the recommended salary in
             Germany, factoring in your family status and job seniority, ranges
-            from
+            from -
           </p>
 
           {calculatedSalaryRange ? (
-            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-3xl text-xl text-white-main font-bold">
+            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-2xl text-xl text-white-main font-bold">
               {lower?.toFixed(2) || "N/A"} to {upper?.toFixed(2) || "N/A"} euros
             </span>
           ) : (
