@@ -131,7 +131,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   };
 
   const sendEmail = async (email, token) => {
-    const verificationUrl = `https://get-global-beta.vercel.app/api/verify?token=${token}`;
+    const verificationUrl = `https://getglobal.pro/api/verify?token=${token}`;
     try {
       const response = await fetch("/api/send/route", {
         method: "POST",
