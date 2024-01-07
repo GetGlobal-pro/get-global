@@ -6,13 +6,12 @@ import DialogueWrapper from "../Shared/DialogeWrapper";
 import * as Icons from "../../Svg/Icons";
 import { supabase } from "../Shared/client.js";
 import { v4 as uuidv4 } from "uuid";
-import cookie from 'js-cookie';
-import { usePlausible } from 'next-plausible'
+import cookie from "js-cookie";
+import { usePlausible } from "next-plausible";
 import toast, { Toaster } from "react-hot-toast";
 
-
 const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
-  const plausible = usePlausible()
+  const plausible = usePlausible();
   const [email, setEmail] = useState("");
   const [refSource, setRefSource] = useState("Direct"); //to track user source
   const [thankYou, setThankYou] = useState(false);
@@ -20,7 +19,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   const [hasCookie, setHasCookie] = useState(false);
 
   useEffect(() => {
-    const cookieValue = cookie.get('email'); // Replace 'email' with the name of your cookie
+    const cookieValue = cookie.get("email"); // Replace 'email' with the name of your cookie
     if (cookieValue) {
       setHasCookie(true);
     }
@@ -40,7 +39,6 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
 
   const handleEmailSubmit = async () => {
     if (await isEmailDisposable(email)) {
-      //console.log("toast")
       toast.error("Please enter a permanent email address.", {
         icon: "❌",
         style: {
@@ -55,12 +53,10 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
     }
 
     if (isEmailValid(email)) {
-      //console.log(" validation toast")
       try {
         const token = await saveEmailToSupabase(email, refSource);
-        
+
         toast.success("Email saved successfully", {
-          
           icon: "🚀",
           style: {
             background: "#FFFFFF",
@@ -113,7 +109,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
 
   const saveEmailToSupabase = async (email, source) => {
     const token = uuidv4();
-    console.log(token);
+
     const { data, error } = await supabase.from("job_seeker").insert([
       {
         js_email: email,
@@ -156,21 +152,20 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   };
 
   const isEmailDisposable = async (email) => {
-    const domain = email.split('@')[1];
+    const domain = email.split("@")[1];
 
     const { data, error } = await supabase
-      .from('disposable_emails')
-      .select('domains')
-      .eq('domains', domain);
+      .from("disposable_emails")
+      .select("domains")
+      .eq("domains", domain);
 
     if (error) {
-      console.error('Error checking disposable email:', error);
+      console.error("Error checking disposable email:", error);
       return false;
     }
 
     return data.length > 0;
   };
-
 
   return (
     <DialogueWrapper Open={isOpen} CloseEvent={toggleIsOpen}>
@@ -202,7 +197,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
               toggleIsOpen();
               setTimeout(() => toggleThankYou(), 500);
               window.open("https://ggbl.pro/lp", "_blank");
-              plausible('Whatsapp-link');
+              plausible("Whatsapp-link");
             }}
             className="h-[60px] w-full flex flex-shrink-0 items-center justify-center gap-2 bg-green rounded-[30px] text-white-main text-lg sm:text-xl font-bold"
           >
@@ -253,9 +248,9 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
               className="h-[60px] w-full flex items-center justify-center gap-2 bg-green rounded-[30px] text-white-main text-lg sm:text-xl font-bold"
               onClick={() => {
                 handleEmailSubmit();
-                cookie.set('email', email);
+                cookie.set("email", email);
                 toggleThankYou();
-                plausible('Email-btn');
+                plausible("Email-btn");
               }}
             >
               <Icons.Whatsapp /> Get your Whatsapp Invite
@@ -265,6 +260,6 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
       )}
     </DialogueWrapper>
   );
-}  
+};
 
 export default WhatsAppPopup;
