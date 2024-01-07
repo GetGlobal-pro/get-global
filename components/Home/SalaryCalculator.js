@@ -7,17 +7,19 @@ import CheckBox from "../Shared/CheckBox";
 import Select from "../Shared/Input";
 import Stats from "./Stats";
 import { supabase } from "../Shared/client";
-import { usePlausible } from 'next-plausible'
-
+import { usePlausible } from "next-plausible";
 
 const SalaryCalculator = () => {
-  const plausible=usePlausible();
+  const plausible = usePlausible();
   const [countryData, setCountryData] = useState({ home: {}, destination: {} });
   const [salaryData, setSalaryData] = useState({});
   const [pppData, setPppData] = useState({});
   const [homeCountries, setHomeCountries] = useState([]);
   const [destinationCountries, setDestinationCountries] = useState([]);
-  const [currency, setCurrency] = useState("");
+  // const [currency, setCurrency] = useState("");
+  const [homeCurrency, setHomeCurrency] = useState("");
+  const [destinationCurrency, setDestinationCurrency] = useState("");
+
   const [calculatedSalaryRange, setCalculatedSalaryRange] = useState(null);
 
   const [isStats, setIsStats] = useState(false);
@@ -150,41 +152,95 @@ const SalaryCalculator = () => {
   }, [inputs.countryFrom, inputs.countryTo]);
 
   // Dedicated useEffect for fetching currency based on inputs.countryFrom
+  // useEffect(() => {
+  //   async function fetchCurrency() {
+  //     if (inputs.countryFrom) {
+  //       try {
+  //         const { data: currencyData, error: currencyError } = await supabase
+  //           .from("country_ppp")
+  //           .select("currency")
+  //           .eq("country_code", inputs.countryFrom)
+  //           .single();
+
+  //         if (currencyError) {
+  //           console.error("Error fetching currency:", currencyError);
+  //           return;
+  //         }
+
+  //         if (currencyData && currencyData.currency) {
+  //           setCurrency(currencyData.currency);
+  //         } else {
+  //           console.log("Currency data is null or undefined");
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching currency:", error);
+  //       }
+  //     }
+  //   }
+
+  //   fetchCurrency();
+  // }, [inputs.countryFrom]); // Only re-run the effect if inputs.countryFrom changes
+
+  // Fetch currency for countryFrom
   useEffect(() => {
-    async function fetchCurrency() {
+    async function fetchHomeCurrency() {
       if (inputs.countryFrom) {
         try {
-          const { data: currencyData, error: currencyError } = await supabase
+          const { data: currencyData, error } = await supabase
             .from("country_ppp")
             .select("currency")
             .eq("country_code", inputs.countryFrom)
             .single();
 
-          if (currencyError) {
-            console.error("Error fetching currency:", currencyError);
+          if (error) {
+            console.error("Error fetching home currency:", error);
             return;
           }
 
           if (currencyData && currencyData.currency) {
-            setCurrency(currencyData.currency);
-          } else {
-            console.log("Currency data is null or undefined");
+            setHomeCurrency(currencyData.currency);
           }
         } catch (error) {
-          console.error("Error fetching currency:", error);
+          console.error("Error fetching home currency:", error);
         }
       }
     }
+    fetchHomeCurrency();
+  }, [inputs.countryFrom]);
 
-    fetchCurrency();
-  }, [inputs.countryFrom]); // Only re-run the effect if inputs.countryFrom changes
+  // Fetch currency for countryTo
+  useEffect(() => {
+    async function fetchDestinationCurrency() {
+      if (inputs.countryTo) {
+        try {
+          const { data: currencyData, error } = await supabase
+            .from("country_ppp")
+            .select("currency")
+            .eq("country_code", inputs.countryTo)
+            .single();
+
+          if (error) {
+            console.error("Error fetching destination currency:", error);
+            return;
+          }
+
+          if (currencyData && currencyData.currency) {
+            setDestinationCurrency(currencyData.currency);
+          }
+        } catch (error) {
+          console.error("Error fetching destination currency:", error);
+        }
+      }
+    }
+    fetchDestinationCurrency();
+  }, [inputs.countryTo]);
 
   // ... existing useEffect for other data fetching that depends on both countryFrom and countryTo
 
   // This useEffect will log the currency state after it's updated
   useEffect(() => {
-    console.log("Currency state updated to:", currency);
-  }, [currency]);
+    console.log("Currency state updated to:", homeCurrency);
+  }, [homeCurrency]);
 
   const calculateSalary = () => {
     // Check if all required data is available
@@ -311,7 +367,7 @@ const SalaryCalculator = () => {
                 className="w-full h-full border-none focus:outline-none bg-transparent px-4 text-white-main text-base sm:text-lg font-medium"
               />
               <span className="h-full flex items-center justify-center rounded-r-[30px] bg-black-main/20 px-6 text-white-main text-base sm:text-lg font-medium">
-                {currency}
+                {homeCurrency}
               </span>
             </div>
           </div>
@@ -444,7 +500,7 @@ const SalaryCalculator = () => {
             </div>
           </div>
           <button
-            onClick={ ()=> plausible('Salary-calc')}
+            onClick={() => plausible("Salary-calc")}
             type="submit"
             className="h-[60px] w-[280px] flex items-center justify-center bg-white-main text-black-main text-lg sm:text-xl font-bold rounded-[50px]"
           >
@@ -456,6 +512,7 @@ const SalaryCalculator = () => {
         <Stats
           setState={toggleStats}
           calculatedSalaryRange={calculatedSalaryRange}
+          currency={destinationCurrency}
         />
       )}
     </aside>
