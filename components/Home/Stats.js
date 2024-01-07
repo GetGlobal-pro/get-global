@@ -4,7 +4,7 @@ import * as Icons from "../../Svg/Icons";
 import { GoChevronLeft } from "react-icons/go";
 import WhatsAppPopup from "./WhatsAppPopup";
 
-const Stats = ({ setState, calculatedSalaryRange }) => {
+const Stats = ({ setState, calculatedSalaryRange, currency }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
@@ -35,7 +35,8 @@ const Stats = ({ setState, calculatedSalaryRange }) => {
 
           {calculatedSalaryRange ? (
             <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-2xl text-xl text-white-main font-bold">
-              {lower?.toFixed(2) || "N/A"} to {upper?.toFixed(2) || "N/A"} euros
+              {lower?.toFixed(2) || "N/A"} to {upper?.toFixed(2) || "N/A"}{" "}
+              {currency || "Currency not available"}
             </span>
           ) : (
             <span>Salary range not available</span>
