@@ -19,6 +19,8 @@ const SalaryCalculator = () => {
   // const [currency, setCurrency] = useState("");
   const [homeCurrency, setHomeCurrency] = useState("");
   const [destinationCurrency, setDestinationCurrency] = useState("");
+  const [homeCountryName, setHomeCountryName] = useState("");
+  const [destinationCountryName, setDestinationCountryName] = useState("");
 
   const [calculatedSalaryRange, setCalculatedSalaryRange] = useState(null);
 
@@ -90,6 +92,27 @@ const SalaryCalculator = () => {
     fetchHomeCountries();
     fetchDestinationCountries();
   }, []);
+
+  useEffect(() => {
+    const selectedHomeCountry = homeCountries.find(
+      (c) => c.value === inputs.countryFrom
+    );
+    if (selectedHomeCountry) {
+      setHomeCountryName(selectedHomeCountry.label);
+    }
+
+    const selectedDestinationCountry = destinationCountries.find(
+      (c) => c.value === inputs.countryTo
+    );
+    if (selectedDestinationCountry) {
+      setDestinationCountryName(selectedDestinationCountry.label);
+    }
+  }, [
+    inputs.countryFrom,
+    inputs.countryTo,
+    homeCountries,
+    destinationCountries,
+  ]);
 
   useEffect(() => {
     async function fetchData() {
@@ -513,6 +536,10 @@ const SalaryCalculator = () => {
           setState={toggleStats}
           calculatedSalaryRange={calculatedSalaryRange}
           currency={destinationCurrency}
+          countryFrom={inputs.countryFrom}
+          countryTo={inputs.countryTo}
+          homeCountryName={homeCountryName}
+          destinationCountryName={destinationCountryName}
         />
       )}
     </aside>
