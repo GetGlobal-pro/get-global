@@ -4,14 +4,20 @@ import * as Icons from "../../Svg/Icons";
 import { GoChevronLeft } from "react-icons/go";
 import WhatsAppPopup from "./WhatsAppPopup";
 
-const Stats = ({ setState, calculatedSalaryRange }) => {
+const Stats = ({
+  setState,
+  calculatedSalaryRange,
+  currency,
+  countryTo,
+  countryFrom,
+  homeCountryName,
+  destinationCountryName,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
   const lower = calculatedSalaryRange?.lower;
   const upper = calculatedSalaryRange?.upper;
-
-  console.log("calculatedSalaryRange in Stats:", calculatedSalaryRange);
 
   return (
     <>
@@ -28,21 +34,26 @@ const Stats = ({ setState, calculatedSalaryRange }) => {
             Your Salary Insights
           </h2>
           <p className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
-            Based on your living standards in India, the recommended salary in
-            Germany, factoring in your family status and job seniority, ranges
-            from -
+            Based on your living standards in{" "}
+            <span className="text-[#FBD96A] font-bold">
+              {homeCountryName},{" "}
+            </span>
+            the recommended salary in{" "}
+            <span className="text-[#FBD96A] font-bold">
+              {destinationCountryName},{" "}
+            </span>{" "}
+            factoring in your family status and job seniority, ranges from
           </p>
 
           {calculatedSalaryRange ? (
-            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-2xl text-xl text-white-main font-bold">
-              {lower?.toFixed(2) || "N/A"} to {upper?.toFixed(2) || "N/A"} euros
+            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main rounded-[40px] sm:text-2xl text-xl text-black font-bold">
+              {lower ? Math.round(lower / 10) * 10 : "N/A"} -{" "}
+              {upper ? Math.round(upper / 10) * 10 : "N/A"}{" "}
+              {currency || "Currency not available"}
             </span>
           ) : (
             <span>Salary range not available</span>
           )}
-          {/* <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main/20 rounded-[40px] sm:text-3xl text-xl text-white-main font-bold">
-            72,000 to 84,000 euros
-          </span> */}
           <p className="text-lg sm:text-[22px] sm:leading-[28px] text-white-main font-medium">
             💵 Destination country{" "}
             <span className="text-[#FBD96A] font-bold">tax rates</span> are

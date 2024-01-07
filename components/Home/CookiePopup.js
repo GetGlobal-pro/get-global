@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import { RxCross1 } from "react-icons/rx";
 import Image from "next/image";
-import cookie from 'js-cookie';
+import cookie from "js-cookie";
 
 function CookiePopup({ Open, CloseEvent }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -55,8 +55,8 @@ function CookiePopup({ Open, CloseEvent }) {
                     {`Have a Cookie :)`}
                   </h2>
                   <p className="text-black-off text-base sm:text-xl font-normal">
-                    This website uses cookies to ensure you get the best experience
-                    on our website.
+                    This website uses cookies to ensure you get the best
+                    experience on our website.
                   </p>
                   <button
                     onClick={handleButtonClick}
