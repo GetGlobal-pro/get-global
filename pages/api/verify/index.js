@@ -4,14 +4,11 @@ import { supabase } from "../../../components/Shared/client.js";
 export default async function handler(req, res) {
   if (req.method === "GET") {
     const { token } = req.query;
-    console.log("Token received:", token);
 
     const { data, error } = await supabase
       .from("job_seeker")
       .select("email_status")
       .eq("verification_token", token);
-    console.log("Token received:", token);
-    console.log("Query result:", data);
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -49,4 +46,3 @@ export default async function handler(req, res) {
     res.status(405).json({ error: "Method Not Allowed" });
   }
 }
-
