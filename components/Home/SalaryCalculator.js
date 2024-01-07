@@ -16,7 +16,6 @@ const SalaryCalculator = () => {
   const [pppData, setPppData] = useState({});
   const [homeCountries, setHomeCountries] = useState([]);
   const [destinationCountries, setDestinationCountries] = useState([]);
-  // const [currency, setCurrency] = useState("");
   const [homeCurrency, setHomeCurrency] = useState("");
   const [destinationCurrency, setDestinationCurrency] = useState("");
   const [homeCountryName, setHomeCountryName] = useState("");
@@ -27,14 +26,13 @@ const SalaryCalculator = () => {
   const [isStats, setIsStats] = useState(false);
   const [inputs, setInputs] = useState({
     currentAddress: "",
-    income: null,
+    income: "",
     planAddress: "",
     status: "family",
     seniority: "mid",
   });
   const toggleStats = () => setIsStats(!isStats);
   const handleInputs = (e) => {
-    console.log(e); // Log the entire event object
     setInputs((prevInputs) => ({
       ...prevInputs,
       [e.target.name]: e.target.value,
@@ -62,7 +60,6 @@ const SalaryCalculator = () => {
         value: country.country_code,
         label: country.country_name,
       }));
-      console.log("Home Countries:", formattedCountries);
 
       setHomeCountries(formattedCountries);
     } catch (error) {
@@ -80,7 +77,6 @@ const SalaryCalculator = () => {
         value: country.country_code,
         label: country.Country_name, // Adjust the field name as per your table structure
       }));
-      console.log("Destination Countries:", formattedCountries);
 
       setDestinationCountries(formattedCountries);
     } catch (error) {
@@ -170,39 +166,7 @@ const SalaryCalculator = () => {
     if (inputs.countryFrom) {
       fetchData();
     }
-
-    console.log("Country from input:", inputs.countryFrom);
   }, [inputs.countryFrom, inputs.countryTo]);
-
-  // Dedicated useEffect for fetching currency based on inputs.countryFrom
-  // useEffect(() => {
-  //   async function fetchCurrency() {
-  //     if (inputs.countryFrom) {
-  //       try {
-  //         const { data: currencyData, error: currencyError } = await supabase
-  //           .from("country_ppp")
-  //           .select("currency")
-  //           .eq("country_code", inputs.countryFrom)
-  //           .single();
-
-  //         if (currencyError) {
-  //           console.error("Error fetching currency:", currencyError);
-  //           return;
-  //         }
-
-  //         if (currencyData && currencyData.currency) {
-  //           setCurrency(currencyData.currency);
-  //         } else {
-  //           console.log("Currency data is null or undefined");
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching currency:", error);
-  //       }
-  //     }
-  //   }
-
-  //   fetchCurrency();
-  // }, [inputs.countryFrom]); // Only re-run the effect if inputs.countryFrom changes
 
   // Fetch currency for countryFrom
   useEffect(() => {
@@ -261,9 +225,7 @@ const SalaryCalculator = () => {
   // ... existing useEffect for other data fetching that depends on both countryFrom and countryTo
 
   // This useEffect will log the currency state after it's updated
-  useEffect(() => {
-    console.log("Currency state updated to:", homeCurrency);
-  }, [homeCurrency]);
+  useEffect(() => {}, [homeCurrency]);
 
   const calculateSalary = () => {
     // Check if all required data is available
@@ -278,21 +240,16 @@ const SalaryCalculator = () => {
       return;
     }
 
-    console.log("Home PPP :", pppData.home.conversion_value_usd);
-    console.log("Dest PPP :", pppData.destination.conversion_value_usd);
     // Convert Salary Using PPP
     const convertedSalary =
       inputs.income *
       (pppData.destination.conversion_value_usd /
         pppData.home.conversion_value_usd);
 
-    console.log("converted salary:", convertedSalary);
-
     // Adjust for Cost of Living and Rent
     const colRentIndex = countryData.destination.col_rent_index;
-    console.log("Col & rent index:", colRentIndex);
+
     const adjustedSalary = convertedSalary * (colRentIndex / 100);
-    console.log("Adjusted salary:", adjustedSalary);
 
     // Select Salary Reference Based on Job Seniority
     let referenceSalary;
@@ -316,16 +273,12 @@ const SalaryCalculator = () => {
         return;
     }
 
-    console.log("Reference salary:", referenceSalary);
-
     // Include Grocery Expenses
     const groceryExpenses =
       referenceSalary * (countryData.destination.groceries_index / 100);
-    console.log("Grocery Exp:", groceryExpenses);
 
     // Total Required Salary (Pre-tax)
     let totalRequiredSalary = adjustedSalary + groceryExpenses;
-    console.log("total req salary:", totalRequiredSalary);
 
     // Apply Family Status Markup
     if (inputs.status === "family&kids") {
@@ -340,11 +293,6 @@ const SalaryCalculator = () => {
     const salaryRangeLowerBound = totalRequiredSalary * 0.9;
     const salaryRangeUpperBound = totalRequiredSalary * 1.1;
 
-    console.log("Calculated salary range:", {
-      lower: salaryRangeLowerBound,
-      upper: salaryRangeUpperBound,
-    });
-
     // Update state with the calculated salary range
     setCalculatedSalaryRange({
       lower: salaryRangeLowerBound,
@@ -352,9 +300,7 @@ const SalaryCalculator = () => {
     });
   };
 
-  useEffect(() => {
-    console.log("Updated calculatedSalaryRange:", calculatedSalaryRange);
-  }, [calculatedSalaryRange]);
+  useEffect(() => {}, [calculatedSalaryRange]);
 
   return (
     <aside className="w-full h-full lg:row-span-2 bg-black-main rounded-[30px]">

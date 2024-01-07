@@ -9,7 +9,7 @@ export const Whatsapp = ({ className, stroke, fill }) => {
       viewBox="0 0 25 27"
       fill="none"
     >
-      <g clip-path="url(#clip0_14_193)">
+      <g clipPath="url(#clip0_14_193)">
         <path
           d="M0.533447 13.3493C0.532861 15.4662 1.08599 17.5332 2.13774 19.355L0.432861 25.5798L6.80317 23.9095C8.56512 24.8687 10.5392 25.3713 12.5454 25.3714H12.5506C19.1732 25.3714 24.5641 19.9825 24.5669 13.3587C24.5682 10.1491 23.3194 7.13091 21.0504 4.86021C18.7819 2.5897 15.7648 1.33862 12.5501 1.33716C5.92681 1.33716 0.536279 6.72583 0.533545 13.3493"
           fill="url(#paint0_linear_14_193)"
@@ -32,8 +32,8 @@ export const Whatsapp = ({ className, stroke, fill }) => {
           y2="1.33716"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#1FAF38" />
-          <stop offset="1" stop-color="#60D669" />
+          <stop stopColor="#1FAF38" />
+          <stop offset="1" stopColor="#60D669" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_14_193"
@@ -43,8 +43,8 @@ export const Whatsapp = ({ className, stroke, fill }) => {
           y2="0.902344"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#F9F9F9" />
-          <stop offset="1" stop-color="white" />
+          <stop stopColor="#F9F9F9" />
+          <stop offset="1" stopColor="white" />
         </linearGradient>
         <clipPath id="clip0_14_193">
           <rect
