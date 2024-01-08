@@ -65,7 +65,7 @@ const Stats = ({
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
             <span className="font-extrabold text-2xl">Unlock Exclusive Access to our Whatsapp Community</span>
           </h2>
-          <h2 className="text-[20px] sm:text-[20px] font-bold font-Just text-white-main">
+          <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
             Accelerate your global career journey with daily job alerts and member-only meetups!
           </h2>
           <button
