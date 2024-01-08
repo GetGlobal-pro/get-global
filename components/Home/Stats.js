@@ -63,18 +63,17 @@ const Stats = ({
         </div>
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-            <span className="font-extrabold">20+ Professionals</span> have
-            already transformed their Global tech careers
+            <span className="font-extrabold text-2xl">Unlock Exclusive Access to our Whatsapp Community</span>
           </h2>
-          <h2 className="text-[28px] sm:text-[35px] font-extrabold font-Just text-white-main">
-            You're Next!
+          <h2 className="text-[20px] sm:text-[20px] font-bold font-Just text-white-main">
+            Accelerate your global career journey with daily job alerts and member-only meetups!
           </h2>
           <button
             onClick={toggleIsOpen}
             className="h-[60px] sm:w-[390px] w-full flex items-center justify-center gap-2 bg-white-main rounded-[40px] text-black-main text-base sm:text-xl font-bold"
           >
             <Icons.Whatsapp />
-            Join Our Invite-only Whatsapp!
+            Join Our Community!
           </button>
         </div>
       </div>
