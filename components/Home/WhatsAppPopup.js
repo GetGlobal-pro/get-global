@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -13,13 +14,14 @@ import toast, { Toaster } from "react-hot-toast";
 const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   const plausible = usePlausible();
   const [email, setEmail] = useState("");
-  const [refSource, setRefSource] = useState("Direct"); //to track user source
+  const [refSource, setRefSource] = useState("Direct");
   const [thankYou, setThankYou] = useState(false);
   const toggleThankYou = () => setThankYou(!thankYou);
   const [hasCookie, setHasCookie] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
-    const cookieValue = cookie.get("email"); // Replace 'email' with the name of your cookie
+    const cookieValue = cookie.get("email");
     if (cookieValue) {
       setHasCookie(true);
     }
@@ -34,22 +36,57 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    toggleThankYou();
+    // toggleThankYou();
   };
 
   const handleEmailSubmit = async () => {
     if (await isEmailDisposable(email)) {
-      toast.error("Please enter a permanent email address.", {
-        icon: "❌",
-        style: {
-          background: "#FFFFFF",
-          color: "black",
-          border: "2px solid #d32f2f",
-          fontSize: "14px",
-        },
-        duration: 4000,
-      });
-      return;
+      setEmailError("Please enter a permanent email address.");
+    } else if (isEmailValid(email)) {
+      toggleThankYou();
+      try {
+        const token = await saveEmailToSupabase(email, refSource);
+
+        toast.success("Email saved successfully", {
+          icon: "🚀",
+          style: {
+            background: "#FFFFFF",
+            color: "black",
+            border: "2px solid #45a049",
+            fontSize: "14px",
+          },
+          duration: 4000,
+        });
+        await sendEmail(email, token);
+        setFormSubmitted(true);
+
+      } catch (error) {
+        if (error.message.includes("unique constraint")) {
+          toast.error("You are already registered with GetGlobal.", {
+            icon: "✅",
+            style: {
+              background: "#FFFFFF",
+              color: "black",
+              border: "2px solid #45a049",
+              fontSize: "14px",
+            },
+            duration: 4000,
+          });
+        } else {
+          toast.error("An error occurred while processing your request.", {
+            icon: "❌",
+            style: {
+              background: "#FFFFFF",
+              color: "black",
+              border: "2px solid #d32f2f",
+              fontSize: "14px",
+            },
+            duration: 4000,
+          });
+        }
+      }
+    } else {
+      setEmailError("Invalid email address.");
     }
 
     if (isEmailValid(email)) {
@@ -94,16 +131,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
         }
       }
     } else {
-      toast.error("Invalid email address.", {
-        icon: "❌",
-        style: {
-          background: "#FFFFFF",
-          color: "black",
-          border: "2px solid #d32f2f",
-          fontSize: "14px",
-        },
-        duration: 4000,
-      });
+      setEmailError("Invalid email address.");
     }
   };
 
@@ -170,7 +198,6 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   return (
     <DialogueWrapper Open={isOpen} CloseEvent={toggleIsOpen}>
       {thankYou || hasCookie ? (
-        // If hasCookie is true, show the section with thankYou
         <div className="w-full h-full sm:px-10 px-4 sm:py-7 py-6 flex flex-col items-start justify-start gap-6">
           <div className="w-full sm:h-[404px] h-[340px] relative">
             <Image
@@ -185,7 +212,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
             Thank you for joining Get Global!
           </h2>
           <p className="text-base sm:text-lg font-normal text-black-off">
-            A link to our
+            A link to our{" "}
             <span className="text-black-main font-semibold">
               exclusive invite-only WhatsApp channel.
             </span>{" "}
@@ -205,7 +232,6 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
           </button>
         </div>
       ) : (
-        // If hasCookie is false, show the section with !thankYou
         <div className="w-full h-full sm:px-10 px-4 py-6 sm:py-7 flex flex-col items-start justify-start gap-6">
           <div className="w-full h-[304px] relative">
             <Image
@@ -227,9 +253,10 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
             to Personalized International Job Alerts and Start Your Global
             Career Journey. 🌏✨
           </p>
-          {/* fetures */}
           <div className="w-full flex flex-col items-start justify-start gap-4">
-            {/* ... (rest of the features section) */}
+            {emailError && (
+              <p className="text-sm text-red-500">{`Error: ${emailError}`}</p>
+            )}
           </div>
           <form
             onSubmit={handleSubmit}
@@ -249,7 +276,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
               onClick={() => {
                 handleEmailSubmit();
                 cookie.set("email", email);
-                toggleThankYou();
+                // toggleThankYou();
                 plausible("Email-btn");
               }}
             >
