@@ -1,3 +1,4 @@
+// Import necessary dependencies and components
 
 "use client";
 import React, { useState, useEffect } from "react";
@@ -17,6 +18,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   const [refSource, setRefSource] = useState("Direct");
   const [thankYou, setThankYou] = useState(false);
   const toggleThankYou = () => setThankYou(!thankYou);
+
   const [hasCookie, setHasCookie] = useState(false);
   const [emailError, setEmailError] = useState("");
 
@@ -42,51 +44,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
   const handleEmailSubmit = async () => {
     if (await isEmailDisposable(email)) {
       setEmailError("Please enter a permanent email address.");
-    } else if (isEmailValid(email)) {
-      toggleThankYou();
-      try {
-        const token = await saveEmailToSupabase(email, refSource);
-
-        toast.success("Email saved successfully", {
-          icon: "🚀",
-          style: {
-            background: "#FFFFFF",
-            color: "black",
-            border: "2px solid #45a049",
-            fontSize: "14px",
-          },
-          duration: 4000,
-        });
-        await sendEmail(email, token);
-        setFormSubmitted(true);
-
-      } catch (error) {
-        if (error.message.includes("unique constraint")) {
-          toast.error("You are already registered with GetGlobal.", {
-            icon: "✅",
-            style: {
-              background: "#FFFFFF",
-              color: "black",
-              border: "2px solid #45a049",
-              fontSize: "14px",
-            },
-            duration: 4000,
-          });
-        } else {
-          toast.error("An error occurred while processing your request.", {
-            icon: "❌",
-            style: {
-              background: "#FFFFFF",
-              color: "black",
-              border: "2px solid #d32f2f",
-              fontSize: "14px",
-            },
-            duration: 4000,
-          });
-        }
-      }
-    } else {
-      setEmailError("Invalid email address.");
+      return;
     }
 
     if (isEmailValid(email)) {
@@ -105,6 +63,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
         });
         await sendEmail(email, token);
         setFormSubmitted(true);
+
       } catch (error) {
         if (error.message.includes("unique constraint")) {
           toast.error("You are already registered with GetGlobal.", {
@@ -172,6 +131,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
     } catch (error) {
       throw new Error(error.message || "Error sending email.");
     }
+    toggleThankYou();
   };
 
   const isEmailValid = (email) => {
