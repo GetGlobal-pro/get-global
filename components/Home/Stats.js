@@ -55,8 +55,8 @@ const Stats = ({
             <span>Salary range not available</span>
           )}
           <p className="text-lg sm:text-[22px] sm:leading-[28px] text-white-main font-medium">
-            💵 Destination country{" "}
-            <span className="text-[#FBD96A] font-bold">tax rates</span> are
+            💵 In{" "}
+            <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, tax rates are
             influenced by salary and family status, with a possible range from
             9% to 42%
           </p>
