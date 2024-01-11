@@ -16,8 +16,18 @@ const Stats = ({
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
-  const lower = calculatedSalaryRange?.lower;
-  const upper = calculatedSalaryRange?.upper;
+  // Function to round to nearest tens and format
+  const formatSalary = (value) => {
+    const rounded = Math.round(value / 10) * 10; // Round to nearest tens
+    return rounded.toLocaleString(undefined, { maximumFractionDigits: 0 }); // Format with commas
+  };
+
+  const formattedLower = calculatedSalaryRange?.lower
+    ? formatSalary(calculatedSalaryRange.lower)
+    : "N/A";
+  const formattedUpper = calculatedSalaryRange?.upper
+    ? formatSalary(calculatedSalaryRange.upper)
+    : "N/A";
 
   return (
     <>
@@ -45,10 +55,19 @@ const Stats = ({
             factoring in your family status and job seniority, ranges from
           </p>
 
-          {calculatedSalaryRange ? (
+          {/* {calculatedSalaryRange ? (
             <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main rounded-[40px] sm:text-2xl text-xl text-black font-bold">
               {lower ? Math.round(lower / 10) * 10 : "N/A"} -{" "}
               {upper ? Math.round(upper / 10) * 10 : "N/A"}{" "}
+              {currency || "Currency not available"}
+            </span>
+          ) : (
+            <span>Salary range not available</span>
+          )} */}
+
+          {calculatedSalaryRange ? (
+            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main rounded-[40px] sm:text-2xl text-xl text-black font-bold">
+              {formattedLower} - {formattedUpper}{" "}
               {currency || "Currency not available"}
             </span>
           ) : (
@@ -63,10 +82,13 @@ const Stats = ({
         </div>
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-            <span className="font-extrabold text-2xl">Unlock Exclusive Access to our Whatsapp Community</span>
+            <span className="font-extrabold text-2xl">
+              Unlock Exclusive Access to our Whatsapp Community
+            </span>
           </h2>
           <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
-            Accelerate your global career journey with daily job alerts and member-only meetups!
+            Accelerate your global career journey with daily job alerts and
+            member-only meetups!
           </h2>
           <button
             onClick={toggleIsOpen}

@@ -22,7 +22,7 @@ const SalaryCalculator = () => {
   const [destinationCountryName, setDestinationCountryName] = useState("");
 
   const [calculatedSalaryRange, setCalculatedSalaryRange] = useState(null);
-
+  const [rawIncome, setRawIncome] = useState(null);
   const [isStats, setIsStats] = useState(false);
   const [inputs, setInputs] = useState({
     currentAddress: "",
@@ -32,11 +32,26 @@ const SalaryCalculator = () => {
     seniority: "mid",
   });
   const toggleStats = () => setIsStats(!isStats);
+  // const handleInputs = (e) => {
+  //   setInputs((prevInputs) => ({
+  //     ...prevInputs,
+  //     [e.target.name]: e.target.value,
+  //   }));
+  // };
   const handleInputs = (e) => {
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      [e.target.name]: e.target.value,
-    }));
+    if (e.target.name === "income") {
+      const numericValue = e.target.value.replace(/,/g, "");
+      if (!isNaN(numericValue) && numericValue.trim() !== "") {
+        setRawIncome(parseFloat(numericValue));
+        const formattedValue = parseFloat(numericValue).toLocaleString();
+        setInputs({ ...inputs, [e.target.name]: formattedValue });
+      } else {
+        setInputs({ ...inputs, [e.target.name]: "" });
+        setRawIncome(null);
+      }
+    } else {
+      setInputs({ ...inputs, [e.target.name]: e.target.value });
+    }
   };
 
   const handleStatusChange = (status) => setInputs({ ...inputs, status });
@@ -242,9 +257,14 @@ const SalaryCalculator = () => {
 
     // Convert Salary Using PPP
     const convertedSalary =
-      inputs.income *
+      rawIncome *
       (pppData.destination.conversion_value_usd /
         pppData.home.conversion_value_usd);
+
+    // const convertedSalary =
+    //   inputs.income *
+    //   (pppData.destination.conversion_value_usd /
+    //     pppData.home.conversion_value_usd);
 
     // Adjust for Cost of Living and Rent
     const colRentIndex = countryData.destination.col_rent_index;
@@ -325,13 +345,27 @@ const SalaryCalculator = () => {
             <p className="text-white-main text-base sm:text-lg font-semibold">
               Your annual income?
             </p>
-            <div className="w-full h-[45px] flex items-center justify-between rounded-[50px] bg-black-off">
+            {/* <div className="w-full h-[45px] flex items-center justify-between rounded-[50px] bg-black-off">
               <input
                 type="number"
                 autoComplete="off"
                 name="income"
                 required
                 value={inputs.income}
+                onChange={handleInputs}
+                className="w-full h-full border-none focus:outline-none bg-transparent px-4 text-white-main text-base sm:text-lg font-medium"
+              />
+              <span className="h-full flex items-center justify-center rounded-r-[30px] bg-black-main/20 px-6 text-white-main text-base sm:text-lg font-medium">
+                {homeCurrency}
+              </span>
+            </div> */}
+            <div className="w-full h-[45px] flex items-center justify-between rounded-[50px] bg-black-off">
+              <input
+                type="text" // Changed from 'number' to 'text'
+                autoComplete="off"
+                name="income"
+                required
+                value={inputs.income} // This is the formatted string with commas
                 onChange={handleInputs}
                 className="w-full h-full border-none focus:outline-none bg-transparent px-4 text-white-main text-base sm:text-lg font-medium"
               />
