@@ -39,6 +39,17 @@ const SalaryCalculator = () => {
     }));
   };
 
+  const handleNumInputs = (e) => {
+    const inputValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+    const formattedValue = inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    setInputs((prevInputs) => ({
+      ...prevInputs,
+      [e.target.name]: formattedValue,
+    }));
+  };
+
+
   const handleStatusChange = (status) => setInputs({ ...inputs, status });
 
   const handleSeniorityChange = (seniority) =>
@@ -300,7 +311,7 @@ const SalaryCalculator = () => {
     });
   };
 
-  useEffect(() => {}, [calculatedSalaryRange]);
+  useEffect(() => { }, [calculatedSalaryRange]);
 
   return (
     <aside className="w-full h-full lg:row-span-2 bg-black-main rounded-[30px]">
@@ -327,12 +338,12 @@ const SalaryCalculator = () => {
             </p>
             <div className="w-full h-[45px] flex items-center justify-between rounded-[50px] bg-black-off">
               <input
-                type="number"
+                type="text"
                 autoComplete="off"
                 name="income"
                 required
                 value={inputs.income}
-                onChange={handleInputs}
+                onChange={handleNumInputs}
                 className="w-full h-full border-none focus:outline-none bg-transparent px-4 text-white-main text-base sm:text-lg font-medium"
               />
               <span className="h-full flex items-center justify-center rounded-r-[30px] bg-black-main/20 px-6 text-white-main text-base sm:text-lg font-medium">
@@ -360,23 +371,21 @@ const SalaryCalculator = () => {
                 <MdOutlineMan
                   className={`${
                     inputs.status == "single"
-                      ? "text-white-main"
-                      : "text-black-faded"
-                  } text-3xl group-hover:text-white-main group-hover:duration-200`}
+                    ? "text-white-main"
+                    : "text-black-faded"
+                    } text-3xl group-hover:text-white-main group-hover:duration-200`}
                 />
                 <FaCircle
-                  className={`${
-                    inputs.status == "single"
-                      ? "text-brand-main"
-                      : "text-black-faded"
-                  } text-xs group-hover:text-brand-main group-hover:duration-200`}
+                  className={`${inputs.status == "single"
+                    ? "text-brand-main"
+                    : "text-black-faded"
+                    } text-xs group-hover:text-brand-main group-hover:duration-200`}
                 />
                 <span
-                  className={`text-sm ${
-                    inputs.status == "single"
-                      ? "bg-brand-secondary text-black-main"
-                      : "text-white-main bg-transparent"
-                  } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
+                  className={`text-sm ${inputs.status == "single"
+                    ? "bg-brand-secondary text-black-main"
+                    : "text-white-main bg-transparent"
+                    } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
                 >
                   Single
                 </span>
@@ -387,25 +396,22 @@ const SalaryCalculator = () => {
                 className="flex flex-col items-center justify-start gap-1 group cursor-pointer"
               >
                 <ImManWoman
-                  className={`${
-                    inputs.status == "family"
-                      ? "text-white-main"
-                      : "text-black-faded"
-                  } text-2xl group-hover:text-white-main group-hover:duration-200`}
+                  className={`${inputs.status == "family"
+                    ? "text-white-main"
+                    : "text-black-faded"
+                    } text-2xl group-hover:text-white-main group-hover:duration-200`}
                 />
                 <FaCircle
-                  className={`${
-                    inputs.status == "family"
-                      ? "text-brand-main"
-                      : "text-black-faded"
-                  } text-xs group-hover:text-brand-main group-hover:duration-200`}
+                  className={`${inputs.status == "family"
+                    ? "text-brand-main"
+                    : "text-black-faded"
+                    } text-xs group-hover:text-brand-main group-hover:duration-200`}
                 />
                 <span
-                  className={`text-sm ${
-                    inputs.status == "family"
-                      ? "bg-brand-secondary text-black-main"
-                      : "text-white-main bg-transparent"
-                  } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
+                  className={`text-sm ${inputs.status == "family"
+                    ? "bg-brand-secondary text-black-main"
+                    : "text-white-main bg-transparent"
+                    } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
                 >
                   Family
                 </span>
@@ -416,25 +422,22 @@ const SalaryCalculator = () => {
                 className="flex flex-col items-center justify-start gap-1 group cursor-pointer"
               >
                 <MdFamilyRestroom
-                  className={`${
-                    inputs.status == "family&kids"
-                      ? "text-white-main"
-                      : "text-black-faded"
-                  } text-3xl group-hover:text-white-main group-hover:duration-200`}
+                  className={`${inputs.status == "family&kids"
+                    ? "text-white-main"
+                    : "text-black-faded"
+                    } text-3xl group-hover:text-white-main group-hover:duration-200`}
                 />
                 <FaCircle
-                  className={`${
-                    inputs.status == "family&kids"
-                      ? "text-brand-main"
-                      : "text-black-faded"
-                  } text-xs group-hover:text-brand-main group-hover:duration-200`}
+                  className={`${inputs.status == "family&kids"
+                    ? "text-brand-main"
+                    : "text-black-faded"
+                    } text-xs group-hover:text-brand-main group-hover:duration-200`}
                 />
                 <span
-                  className={`text-sm whitespace-nowrap ${
-                    inputs.status == "family&kids"
-                      ? "bg-brand-secondary text-black-main"
-                      : "text-white-main bg-transparent"
-                  } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
+                  className={`text-sm whitespace-nowrap ${inputs.status == "family&kids"
+                    ? "bg-brand-secondary text-black-main"
+                    : "text-white-main bg-transparent"
+                    } py-1 px-2 rounded-lg group-hover:text-black-main group-hover:bg-brand-secondary group-hover:duration-200`}
                 >
                   Family with kids
                 </span>
