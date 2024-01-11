@@ -17,7 +17,7 @@ const Stats = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
-
+  const plausible = usePlausible();
   // Function to round to nearest tens and format
   const formatSalary = (value) => {
     const rounded = Math.round(value / 10) * 10; // Round to nearest tens
@@ -30,6 +30,32 @@ const Stats = ({
   const formattedUpper = calculatedSalaryRange?.upper
     ? formatSalary(calculatedSalaryRange.upper)
     : "N/A";
+
+  if (countryFrom && countryTo && countryFrom === countryTo) {
+    return (
+      <div className="w-full h-full flex flex-col items-start justify-start lg:justify-between gap-4">
+        <div className="w-full flex flex-col items-start justify-start gap-5 sm:py-[70px] lg:py-10 py-8 px-6 sm:px-10">
+          <button
+            onClick={() => {
+              setState();
+              plausible("Go-back");
+            }}
+            className="w-[100px] h-[30px] rounded-[40px] flex items-center justify-center gap-1 text-white-main text-sm font-Just font-normal bg-white-main/20"
+          >
+            <GoChevronLeft />
+            Go back
+          </button>
+          <h2 className="text-white-main sm:text-3xl text-2xl font-extrabold font-Just">
+            Oops! It looks like you've selected the same country for both your current and desired location.
+          </h2>
+          <p className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
+            Our Salary Calculator is designed for international job changes. For salary insights within the same country or city,
+            we recommend using Google for more specific information.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
