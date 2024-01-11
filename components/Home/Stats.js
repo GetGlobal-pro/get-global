@@ -18,36 +18,19 @@ const Stats = ({
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
 
-  const lower = calculatedSalaryRange?.lower;
-  const upper = calculatedSalaryRange?.upper;
-  const plausible = usePlausible();
+  // Function to round to nearest tens and format
+  const formatSalary = (value) => {
+    const rounded = Math.round(value / 10) * 10; // Round to nearest tens
+    return rounded.toLocaleString(undefined, { maximumFractionDigits: 0 }); // Format with commas
+  };
 
-  if (countryFrom && countryTo && countryFrom === countryTo) {
-    return (
-      <div className="w-full h-full flex flex-col items-start justify-start lg:justify-between gap-4">
-        <div className="w-full flex flex-col items-start justify-start gap-5 sm:py-[70px] lg:py-10 py-8 px-6 sm:px-10">
-          <button
-            onClick={() => {
-              setState();
-              plausible("Go-back");
-            }}
-            className="w-[100px] h-[30px] rounded-[40px] flex items-center justify-center gap-1 text-white-main text-sm font-Just font-normal bg-white-main/20"
-          >
-            <GoChevronLeft />
-            Go back
-          </button>
-          <h2 className="text-white-main sm:text-3xl text-2xl font-extrabold font-Just">
-            Oops! It looks like you've selected the same country for both your current and desired location.
-          </h2>
-          <p className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
-            Our Salary Calculator is designed for international job changes. For salary insights within the same country or city,
-            we recommend using Google for more specific information.
-          </p>
-        </div>
-      </div>
-    );
-  }
-  
+  const formattedLower = calculatedSalaryRange?.lower
+    ? formatSalary(calculatedSalaryRange.lower)
+    : "N/A";
+  const formattedUpper = calculatedSalaryRange?.upper
+    ? formatSalary(calculatedSalaryRange.upper)
+    : "N/A";
+
   return (
     <>
       <div className="w-full h-full flex flex-col items-start justify-start lg:justify-between gap-4">
@@ -77,10 +60,19 @@ const Stats = ({
             factoring in your family status and job seniority, ranges from
           </p>
 
-          {calculatedSalaryRange ? (
+          {/* {calculatedSalaryRange ? (
             <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main rounded-[40px] sm:text-2xl text-xl text-black font-bold">
               {lower ? Math.round(lower / 10) * 10 : "N/A"} -{" "}
               {upper ? Math.round(upper / 10) * 10 : "N/A"}{" "}
+              {currency || "Currency not available"}
+            </span>
+          ) : (
+            <span>Salary range not available</span>
+          )} */}
+
+          {calculatedSalaryRange ? (
+            <span className="h-[68px] sm:w-[364px] w-full px-2 flex items-center justify-center bg-white-main rounded-[40px] sm:text-2xl text-xl text-black font-bold">
+              {formattedLower} - {formattedUpper}{" "}
               {currency || "Currency not available"}
             </span>
           ) : (
@@ -95,10 +87,13 @@ const Stats = ({
         </div>
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-            <span className="font-extrabold text-2xl">Unlock Exclusive Access to our Whatsapp Community</span>
+            <span className="font-extrabold text-2xl">
+              Unlock Exclusive Access to our Whatsapp Community
+            </span>
           </h2>
           <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
-            Accelerate your global career journey with daily job alerts and member-only meetups!
+            Accelerate your global career journey with daily job alerts and
+            member-only meetups!
           </h2>
           <button
             onClick={toggleIsOpen}
