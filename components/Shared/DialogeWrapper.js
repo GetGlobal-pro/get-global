@@ -9,9 +9,15 @@ function DialogueWrapper({
   children,
   height = "h-[700px]",
 }) {
+  const handleClose = () => {
+    // Call the CloseEvent function or perform any other necessary actions
+    CloseEvent();
+  };
+
   return (
     <Dialog
       open={Open}
+      onClose={handleClose} // Add the onClose prop to handle closing the dialog
       sx={{
         "& .MuiPaper-root": {
           background: "#fff",
