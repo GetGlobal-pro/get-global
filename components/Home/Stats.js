@@ -56,20 +56,19 @@ const Stats = ({
           </div>
           <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
             <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-              <span className="font-extrabold text-2xl">
-                Unlock Exclusive Access to our Whatsapp Community
+              <span className="font-bold text-3xl">
+                Ready to explore job opportunities in {destinationCountryName} with Visa and relocation support?
               </span>
             </h2>
             <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
-              Accelerate your global career journey with daily job alerts and
-              member-only meetups!
+              Join our exclusive WhatsApp Channel for daily job alerts and members-only meet-ups. Your next career adventure is just a click away!
             </h2>
             <button
               onClick={toggleIsOpen}
               className="h-[60px] sm:w-[390px] w-full flex items-center justify-center gap-2 bg-white-main rounded-[40px] text-black-main text-base sm:text-xl font-bold"
             >
               <Icons.Whatsapp />
-              Join Our Community!
+              Join Get Global Community!
             </button>
           </div>
         </div>
@@ -135,19 +134,18 @@ const Stats = ({
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
             <span className="font-extrabold text-2xl">
-              Unlock Exclusive Access to our Whatsapp Community
+              Ready to explore job opportunities in {destinationCountryName} with Visa and relocation support?
             </span>
           </h2>
           <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
-            Accelerate your global career journey with daily job alerts and
-            member-only meetups!
+            Join our exclusive WhatsApp Channel for daily job alerts and members-only meet-ups. Your next career adventure is just a click away!
           </h2>
           <button
             onClick={toggleIsOpen}
             className="h-[60px] sm:w-[390px] w-full flex items-center justify-center gap-2 bg-white-main rounded-[40px] text-black-main text-base sm:text-xl font-bold"
           >
             <Icons.Whatsapp />
-            Join Our Community!
+            Join Get Global Community!
           </button>
         </div>
       </div>
