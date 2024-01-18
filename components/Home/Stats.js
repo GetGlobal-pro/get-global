@@ -133,7 +133,7 @@ const Stats = ({
         </div>
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-            <span className="font-extrabold text-2xl">
+            <span className="font-bold text-2xl">
               Ready to explore job opportunities in {destinationCountryName} with Visa and relocation support?
             </span>
           </h2>
