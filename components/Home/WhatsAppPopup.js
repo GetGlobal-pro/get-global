@@ -47,7 +47,13 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
       return;
     }
 
+    if (await isEmailSaved(email)) {
+      setEmailError("You are already registered with GetGlobal.");
+      return;
+    }
+
     if (isEmailValid(email)) {
+      toggleThankYou();
       try {
         const token = await saveEmailToSupabase(email, refSource);
 
@@ -131,7 +137,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
     } catch (error) {
       throw new Error(error.message || "Error sending email.");
     }
-    toggleThankYou();
+
   };
 
   const isEmailValid = (email) => {
@@ -146,6 +152,20 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
       .from("disposable_emails")
       .select("domains")
       .eq("domains", domain);
+
+    if (error) {
+      console.error("Error checking disposable email:", error);
+      return false;
+    }
+
+    return data.length > 0;
+  };
+
+  const isEmailSaved = async (email) => {
+    const { data, error } = await supabase
+      .from("job_seeker")
+      .select("js_email")
+      .eq("js_email", email);
 
     if (error) {
       console.error("Error checking disposable email:", error);
