@@ -14,6 +14,9 @@ const Stats = ({
   countryFrom,
   homeCountryName,
   destinationCountryName,
+  destinationTaxType,
+  MaxTax,
+  MinTax,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
@@ -124,20 +127,38 @@ const Stats = ({
           ) : (
             <span>Salary range not available</span>
           )}
-          <p className="text-lg sm:text-[22px] sm:leading-[28px] text-white-main font-medium">
-            💵 In{" "}
-            <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, tax rates are
-            influenced by salary and family status, with a possible range from
-            9% to 42%
+          <p className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
+            {destinationTaxType === 'Progressive' && (
+              <>
+                💵 In{" "}
+                <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, the tax rates are progressive. This means your tax rate increases as your income rises,
+                ranging from <span className="text-[#FBD96A] font-bold">{MinTax}% to {MaxTax}%</span> based on your salary and family status.
+              </>
+            )}
+            {destinationTaxType === 'Flat' && (
+              <>
+                💵 In{" "}
+                <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, a flat tax system is in place. This means everyone pays
+                the same tax rate of <span className="text-[#FBD96A] font-bold">{MinTax}%</span> on their income, regardless of the amount.
+              </>
+            )}
+            {destinationTaxType === 'Zero' && (
+              <>
+                💵 In{" "}
+                <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, you'll enjoy a <span className="text-[#FBD96A] font-bold">zero tax policy</span> on your income. This means there
+                is no income tax charged, regardless of your earnings.
+              </>
+            )}
           </p>
+
         </div>
         <div className="w-full sm:py-[70px] lg:py-6 py-8 sm:px-10 px-4 gradient rounded-b-[30px] flex flex-col items-start justify-start gap-8">
           <h2 className="text-white-main text-2xl sm:text-3xl font-medium font-Just">
-            <span className="font-bold text-2xl">
-              Ready to explore job opportunities in <span className="text-[#ffd446] font-bold">{destinationCountryName}</span> with Visa and relocation support?
+            <span className="font-extrabold text-2xl">
+              Ready to explore job opportunities in <span className="text-[#ffd446] font-extrabold">{destinationCountryName}</span> with Visa and relocation support?
             </span>
           </h2>
-          <h2 className="text-[20px] sm:text-[20px] font-Just text-white-main">
+          <h2 className="text-lg sm:text-[18px] sm:leading-7 font-medium text-white-main">
             Join our exclusive WhatsApp Channel for daily job alerts and members-only meet-ups. Your next career adventure is just a click away!
           </h2>
           <button
