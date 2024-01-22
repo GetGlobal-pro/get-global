@@ -15,6 +15,8 @@ const Stats = ({
   homeCountryName,
   destinationCountryName,
   destinationTaxType,
+  MaxTax,
+  MinTax,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleIsOpen = () => setIsOpen(!isOpen);
@@ -130,20 +132,20 @@ const Stats = ({
               <>
                 💵 In{" "}
                 <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, the tax rates are progressive. This means your tax rate increases as your income rises,
-                ranging from [lower limit]% to [upper limit]% based on your salary and family status.
+                ranging from <span className="text-[#FBD96A] font-bold">{MinTax}% to {MaxTax}%</span> based on your salary and family status.
               </>
             )}
             {destinationTaxType === 'Flat' && (
               <>
                 💵 In{" "}
                 <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, a flat tax system is in place. This means everyone pays
-                the same tax rate of [flat tax rate]% on their income, regardless of the amount.
+                the same tax rate of <span className="text-[#FBD96A] font-bold">{MinTax}%</span> on their income, regardless of the amount.
               </>
             )}
             {destinationTaxType === 'Zero' && (
               <>
                 💵 In{" "}
-                <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, you'll enjoy a zero tax policy on your income. This means there
+                <span className="text-[#FBD96A] font-bold">{destinationCountryName}</span>, you'll enjoy a <span className="text-[#FBD96A] font-bold">zero tax policy</span> on your income. This means there
                 is no income tax charged, regardless of your earnings.
               </>
             )}

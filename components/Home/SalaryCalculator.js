@@ -20,7 +20,9 @@ const SalaryCalculator = () => {
   const [destinationCurrency, setDestinationCurrency] = useState("");
   const [homeCountryName, setHomeCountryName] = useState("");
   const [destinationCountryName, setDestinationCountryName] = useState("");
-
+  const [taxType, setTaxType] = useState(null); // New state for tax type
+  const [MaxTax, setMaxTax] = useState(null); // New state for max tax
+  const [MinTax, setMinTax] = useState(null); // New state for min tax
   const [calculatedSalaryRange, setCalculatedSalaryRange] = useState(null);
   const [rawIncome, setRawIncome] = useState(null);
   const [isStats, setIsStats] = useState(false);
@@ -32,12 +34,7 @@ const SalaryCalculator = () => {
     seniority: "mid",
   });
   const toggleStats = () => setIsStats(!isStats);
-  // const handleInputs = (e) => {
-  //   setInputs((prevInputs) => ({
-  //     ...prevInputs,
-  //     [e.target.name]: e.target.value,
-  //   }));
-  // };
+
   const handleInputs = (e) => {
     if (e.target.name === "income") {
       const numericValue = e.target.value.replace(/,/g, "");
@@ -55,7 +52,7 @@ const SalaryCalculator = () => {
   };
 
   const handleNumInputs = (e) => {
-    const inputValue = e.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+    const inputValue = e.target.value.replace(/\D/g, '');
     const formattedValue = inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
     setInputs((prevInputs) => ({
@@ -64,15 +61,12 @@ const SalaryCalculator = () => {
     }));
   };
 
-
   const handleStatusChange = (status) => setInputs({ ...inputs, status });
+  const handleSeniorityChange = (seniority) => setInputs({ ...inputs, seniority });
 
-  const handleSeniorityChange = (seniority) =>
-    setInputs({ ...inputs, seniority });
   const handleSubmit = (e) => {
     e.preventDefault();
-    calculateSalary(); // This will update the calculatedSalaryRange state
-
+    calculateSalary();
     toggleStats();
   };
 
@@ -86,7 +80,6 @@ const SalaryCalculator = () => {
         value: country.country_code,
         label: country.country_name,
       }));
-
       setHomeCountries(formattedCountries);
     } catch (error) {
       console.error("Error fetching home countries:", error);
@@ -101,9 +94,8 @@ const SalaryCalculator = () => {
       if (error) throw error;
       const formattedCountries = countries.map((country) => ({
         value: country.country_code,
-        label: country.Country_name, // Adjust the field name as per your table structure
+        label: country.Country_name,
       }));
-
       setDestinationCountries(formattedCountries);
     } catch (error) {
       console.error("Error fetching destination countries:", error);
@@ -129,12 +121,7 @@ const SalaryCalculator = () => {
     if (selectedDestinationCountry) {
       setDestinationCountryName(selectedDestinationCountry.label);
     }
-  }, [
-    inputs.countryFrom,
-    inputs.countryTo,
-    homeCountries,
-    destinationCountries,
-  ]);
+  }, [inputs.countryFrom, inputs.countryTo, homeCountries, destinationCountries]);
 
   useEffect(() => {
     async function fetchData() {
@@ -168,7 +155,7 @@ const SalaryCalculator = () => {
         // Fetch salary reference data based on seniority
         const { data: salaryData, error: salaryError } = await supabase
           .from("country_salary_tax")
-          .select("25th_salary, median_salary, 75th_salary, 90th_salary")
+          .select("25th_salary, median_salary, 75th_salary, 90th_salary, tax_type, Minimum_tax_rate, Maximum_tax_rate")
           .eq("Country_code", inputs.countryTo)
           .single();
 
@@ -184,6 +171,9 @@ const SalaryCalculator = () => {
         setPppData({ home: homePppData, destination: destPppData });
         setCountryData({ ...countryData, destination: statsData });
         setSalaryData(salaryData);
+        setTaxType(salaryData.tax_type);
+        setMaxTax(salaryData.Maximum_tax_rate);
+        setMinTax(salaryData.Minimum_tax_rate);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -292,12 +282,10 @@ const SalaryCalculator = () => {
         referenceSalary = salaryData.median_salary;
         break;
       case "manager":
-        referenceSalary =
-          (salaryData.median_salary + salaryData["75th_salary"]) / 2;
+        referenceSalary = (salaryData.median_salary + salaryData["75th_salary"]) / 2;
         break;
       case "leader":
-        referenceSalary =
-          (salaryData["75th_salary"] + salaryData["90th_salary"]) / 2;
+        referenceSalary = (salaryData["75th_salary"] + salaryData["90th_salary"]) / 2;
         break;
       default:
         console.error("Invalid seniority level");
@@ -523,6 +511,9 @@ const SalaryCalculator = () => {
           countryTo={inputs.countryTo}
           homeCountryName={homeCountryName}
           destinationCountryName={destinationCountryName}
+          destinationTaxType={taxType}
+          MaxTax={MaxTax}
+          MinTax={MinTax}
         />
       )}
     </aside>
