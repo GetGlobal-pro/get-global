@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import EmailTemplate from "../../../components/Home/EmailTemplate.js";
 
-const resend = new Resend("re_FE2aMxiE_3pHbhR7h8uYyVKgiDWS2JjwY");
+const resend = new Resend("re_4i7zrnT4_7Nd7Beq6oSm6HF32KjkfSZmn");
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
       const { email, verificationToken } = req.body;
 
       const data = await resend.emails.send({
-        from: "GetGlobal <hello@getglobal.pro>",
+        from: "GetGlobal <hello@getglobal.jobs>",
         to: email,
         subject:
           "Welcome to Get Global 🌐 - Your Answer to the Global Talent Quest",
