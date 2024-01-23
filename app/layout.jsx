@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <PlausibleProvider domain="getglobal.pro"
+        <PlausibleProvider domain="getglobal.jobs"
           // trackLocalhost={true}
           // enabled={true}
           taggedEvents={true}
