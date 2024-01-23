@@ -48,7 +48,7 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
     }
 
     if (await isEmailSaved(email)) {
-      setEmailError("You are already registered with GetGlobal.");
+      toggleThankYou();
       return;
     }
 
@@ -226,12 +226,13 @@ const WhatsAppPopup = ({ isOpen, toggleIsOpen }) => {
             Almost there!
           </h2>
           <p className="text-base sm:text-lg font-normal text-black-off">
-            Enter Your Email to{" "}
+            Enter Your email to{" "}
             <span className="text-black-main font-semibold">
               Get instant access
             </span>{" "}
-            to Personalized International Job Alerts and Start Your Global
-            Career Journey. 🌏✨
+            to our WhatsApp channel. <br /> Stay updated with <span className="text-black-main font-semibold">daily job alerts,
+              the latest product updates, and information about community meet-ups. </span>
+            Connect, explore, and take your career global! 🌏✨
           </p>
           <div className="w-full flex flex-col items-start justify-start gap-4">
             {emailError && (
