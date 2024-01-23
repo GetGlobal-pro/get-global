@@ -1,8 +1,8 @@
 import React from "react";
 
 const EmailTemplate = ({ verificationToken }) => {
-  const verificationUrl = `https://getglobal.pro/api/verify?token=${verificationToken}`;
-  const unsubscribeUrl = `https://getglobal.pro/api/unsubscribe?token=${verificationToken}`;
+  const verificationUrl = `https://getglobal.jobs/api/verify?token=${verificationToken}`;
+  const unsubscribeUrl = `https://getglobal.jobs/api/unsubscribe?token=${verificationToken}`;
 
   return (
     <div style={styles.container}>
