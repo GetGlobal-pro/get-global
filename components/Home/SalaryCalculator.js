@@ -64,11 +64,58 @@ const SalaryCalculator = () => {
   const handleStatusChange = (status) => setInputs({ ...inputs, status });
   const handleSeniorityChange = (seniority) => setInputs({ ...inputs, seniority });
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!inputs.countryFrom || !inputs.countryTo) {
+      console.error("Please select both home and destination countries.");
+      return;
+    }
+
+    if (!rawIncome) {
+      console.error("Please enter a valid income.");
+      return;
+    }
+
+    // Calculate the salary range
     calculateSalary();
+    
+    const { lower, upper } = calculateSalary(); 
+    console.log("lower", lower);
+    console.log("upper", upper);
+
+    try {
+      // Store the values into the Supabase database
+      const payload = {
+        source_country: inputs.countryFrom,
+        target_country: inputs.countryTo,
+        annual_income: rawIncome,
+        seniority: inputs.seniority,
+        family_status: inputs.status,
+        calculated_salary_min: lower,
+        calculated_salary_max: upper,
+
+      };
+
+      const { data, error } = await supabase
+        .from("salaryinsight_client_details")
+        .insert([payload]);
+
+      if (error) {
+        console.error("Error storing salary insight details:", error);
+        return;
+      }
+
+      console.log("Salary insight details stored successfully:", data);
+    } catch (error) {
+      console.error("Error storing salary insight details:", error);
+    }
+
+    // Toggle to the Stats view
     toggleStats();
   };
+
 
   const fetchHomeCountries = async () => {
     try {
@@ -241,7 +288,7 @@ const SalaryCalculator = () => {
   // ... existing useEffect for other data fetching that depends on both countryFrom and countryTo
 
   // This useEffect will log the currency state after it's updated
-  useEffect(() => {}, [homeCurrency]);
+  useEffect(() => { }, [homeCurrency]);
 
   const calculateSalary = () => {
     // Check if all required data is available
@@ -317,6 +364,12 @@ const SalaryCalculator = () => {
       lower: salaryRangeLowerBound,
       upper: salaryRangeUpperBound,
     });
+
+    // Return the calculated salary range
+    return {
+      lower: salaryRangeLowerBound,
+      upper: salaryRangeUpperBound,
+    };
   };
 
   useEffect(() => { }, [calculatedSalaryRange]);
@@ -391,8 +444,7 @@ const SalaryCalculator = () => {
                 className="flex flex-col items-center justify-start gap-1 group cursor-pointer"
               >
                 <MdOutlineMan
-                  className={`${
-                    inputs.status == "single"
+                  className={`${inputs.status == "single"
                     ? "text-white-main"
                     : "text-black-faded"
                     } text-3xl group-hover:text-white-main group-hover:duration-200`}
